@@ -1,55 +1,196 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <title>Full Stack Login App</title>
+
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>AuthFlow | Login & Signup</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
+
 </head>
 
 <body>
 
-<h1>Login & Signup App</h1>
+  <div class="container">
 
-<h2>Signup</h2>
+    <div class="left-section">
 
-<input id="name" placeholder="Name">
-<input id="signupEmail" placeholder="Email">
-<input id="signupPassword" placeholder="Password">
+      <h1>AuthFlow</h1>
 
-<button onclick="signup()">
-Signup
-</button>
+      <p>
+        Secure Authentication System
+        built using Node.js,
+        Express.js, JWT & bcrypt.
+      </p>
 
-<hr>
+    </div>
 
-<h2>Login</h2>
+    <div class="right-section">
 
-<input id="loginEmail" placeholder="Email">
-<input id="loginPassword" placeholder="Password">
+      <div class="card">
 
-<button onclick="login()">
-Login
-</button>
+        <div class="tabs">
+
+          <button
+            class="tab active"
+            onclick="showSignup()"
+            id="signupTab"
+          >
+            Signup
+          </button>
+
+          <button
+            class="tab"
+            onclick="showLogin()"
+            id="loginTab"
+          >
+            Login
+          </button>
+
+        </div>
+
+        <div id="signupForm">
+
+          <h2>Create Account</h2>
+
+          <input
+            type="text"
+            id="signupName"
+            placeholder="Full Name"
+          />
+
+          <input
+            type="email"
+            id="signupEmail"
+            placeholder="Email Address"
+          />
+
+          <input
+            type="password"
+            id="signupPassword"
+            placeholder="Password"
+          />
+
+          <button
+            class="primary-btn"
+            onclick="signup()"
+          >
+            Create Account
+          </button>
+
+        </div>
+
+        <div
+          id="loginForm"
+          style="display:none;"
+        >
+
+          <h2>Welcome Back</h2>
+
+          <input
+            type="email"
+            id="loginEmail"
+            placeholder="Email Address"
+          />
+
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Password"
+          />
+
+          <button
+            class="primary-btn"
+            onclick="login()"
+          >
+            Login
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
 
 <script>
 
+function showSignup() {
+
+  document.getElementById(
+    "signupForm"
+  ).style.display = "block";
+
+  document.getElementById(
+    "loginForm"
+  ).style.display = "none";
+
+  document.getElementById(
+    "signupTab"
+  ).classList.add("active");
+
+  document.getElementById(
+    "loginTab"
+  ).classList.remove("active");
+}
+
+function showLogin() {
+
+  document.getElementById(
+    "signupForm"
+  ).style.display = "none";
+
+  document.getElementById(
+    "loginForm"
+  ).style.display = "block";
+
+  document.getElementById(
+    "loginTab"
+  ).classList.add("active");
+
+  document.getElementById(
+    "signupTab"
+  ).classList.remove("active");
+}
+
 async function signup() {
 
-  const res = await fetch("/signup", {
-    method: "POST",
-    headers: {
-      "Content-Type":"application/json"
-    },
-    body: JSON.stringify({
-      name:
-        document.getElementById("name").value,
+  const res = await fetch(
+    "/api/signup",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        name:
+          document.getElementById(
+            "signupName"
+          ).value,
 
-      email:
-        document.getElementById("signupEmail").value,
+        email:
+          document.getElementById(
+            "signupEmail"
+          ).value,
 
-      password:
-        document.getElementById("signupPassword").value
-    })
-  });
+        password:
+          document.getElementById(
+            "signupPassword"
+          ).value,
+      }),
+    }
+  );
 
   const data = await res.json();
 
@@ -58,26 +199,36 @@ async function signup() {
 
 async function login() {
 
-  const res = await fetch("/login", {
-    method: "POST",
-    headers: {
-      "Content-Type":"application/json"
-    },
-    body: JSON.stringify({
-      email:
-        document.getElementById("loginEmail").value,
+  const res = await fetch(
+    "/api/login",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        email:
+          document.getElementById(
+            "loginEmail"
+          ).value,
 
-      password:
-        document.getElementById("loginPassword").value
-    })
-  });
+        password:
+          document.getElementById(
+            "loginPassword"
+          ).value,
+      }),
+    }
+  );
 
   const data = await res.json();
 
-  localStorage.setItem(
-    "token",
-    data.token
-  );
+  if (data.token) {
+    localStorage.setItem(
+      "token",
+      data.token
+    );
+  }
 
   alert(data.message);
 }
