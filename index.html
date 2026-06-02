@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Full Stack Login App</title>
+</head>
+
+<body>
+
+<h1>Login & Signup App</h1>
+
+<h2>Signup</h2>
+
+<input id="name" placeholder="Name">
+<input id="signupEmail" placeholder="Email">
+<input id="signupPassword" placeholder="Password">
+
+<button onclick="signup()">
+Signup
+</button>
+
+<hr>
+
+<h2>Login</h2>
+
+<input id="loginEmail" placeholder="Email">
+<input id="loginPassword" placeholder="Password">
+
+<button onclick="login()">
+Login
+</button>
+
+<script>
+
+async function signup() {
+
+  const res = await fetch("/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      name:
+        document.getElementById("name").value,
+
+      email:
+        document.getElementById("signupEmail").value,
+
+      password:
+        document.getElementById("signupPassword").value
+    })
+  });
+
+  const data = await res.json();
+
+  alert(data.message);
+}
+
+async function login() {
+
+  const res = await fetch("/login", {
+    method: "POST",
+    headers: {
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      email:
+        document.getElementById("loginEmail").value,
+
+      password:
+        document.getElementById("loginPassword").value
+    })
+  });
+
+  const data = await res.json();
+
+  localStorage.setItem(
+    "token",
+    data.token
+  );
+
+  alert(data.message);
+}
+
+</script>
+
+</body>
+</html>
