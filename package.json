@@ -1,6 +1,7 @@
 {
   "name": "fullstack-login-app",
   "version": "1.0.0",
+  "description": "Full Stack Authentication System",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
