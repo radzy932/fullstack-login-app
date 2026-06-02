@@ -12,64 +12,102 @@ app.use(express.static(__dirname));
 
 const users = [];
 
-app.post("/signup", async (req, res) => {
-  const { name, email, password } = req.body;
+app.post("/api/signup", async (req, res) => {
+  try {
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const { name, email, password } = req.body;
 
-  users.push({
-    name,
-    email,
-    password: hashedPassword,
-  });
-
-  res.json({
-    message: "Signup Successful",
-  });
-});
-
-app.post("/login", async (req, res) => {
-
-  const { email, password } = req.body;
-
-  const user = users.find(
-    (u) => u.email === email
-  );
-
-  if (!user) {
-    return res.status(400).json({
-      message: "User not found",
-    });
-  }
-
-  const validPassword =
-    await bcrypt.compare(
-      password,
-      user.password
+    const existingUser = users.find(
+      (user) => user.email === email
     );
 
-  if (!validPassword) {
-    return res.status(400).json({
-      message: "Wrong Password",
-    });
-  }
-
-  const token = jwt.sign(
-    {
-      email: user.email,
-    },
-    "secretkey",
-    {
-      expiresIn: "1d",
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already exists",
+      });
     }
-  );
 
-  res.json({
-    message: "Login Successful",
-    token,
-  });
+    const hashedPassword =
+      await bcrypt.hash(password, 10);
+
+    users.push({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Account created successfully",
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+
+  try {
+
+    const { email, password } = req.body;
+
+    const user = users.find(
+      (u) => u.email === email
+    );
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const validPassword =
+      await bcrypt.compare(
+        password,
+        user.password
+      );
+
+    if (!validPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        email: user.email,
+      },
+      "internship_secret_key",
+      {
+        expiresIn: "1d",
+      }
+    );
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      token,
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+
+  }
 });
 
 app.listen(5000, () => {
-  console.log("Server Running");
+  console.log("Server running on port 5000");
 });
